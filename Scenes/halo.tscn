@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dw2x88jiop4uh"]
+
+[ext_resource type="Texture2D" uid="uid://cm003l43ixs24" path="res://Assets/emptySquare.png" id="1_rapgp"]
+
+[node name="Halo" type="Sprite2D"]
+modulate = Color(0.545098, 0.980392, 0.466667, 1)
+texture = ExtResource("1_rapgp")

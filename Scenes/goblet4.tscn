@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://byvsq53dbefw6"]
+
+[ext_resource type="PackedScene" uid="uid://bi2lr32bgproc" path="res://Scenes/goblet.tscn" id="1_eto08"]
+[ext_resource type="Script" path="res://Scripts/GobletScene.cs" id="1_s43uf"]
+[ext_resource type="Texture2D" uid="uid://cot6kdw1qsgj5" path="res://Assets/Gobblets/White/big.tres" id="3_pqk2q"]
+
+[node name="Node2D" type="Node2D" node_paths=PackedStringArray("Sprite2D")]
+z_index = 4
+script = ExtResource("1_s43uf")
+Sprite2D = NodePath("gobblet")
+
+[node name="gobblet" parent="." instance=ExtResource("1_eto08")]
+z_index = 2
+scale = Vector2(0.85, 1.275)
+texture = ExtResource("3_pqk2q")

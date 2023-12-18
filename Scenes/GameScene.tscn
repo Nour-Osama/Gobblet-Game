@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://ccb5y62pr54hw"]
+
+[ext_resource type="Script" path="res://Scripts/GameManager.cs" id="1_d4ci6"]
+[ext_resource type="PackedScene" uid="uid://b0u24bp2rc32v" path="res://Scenes/BoardScene.tscn" id="1_halis"]
+[ext_resource type="PackedScene" uid="uid://dw2x88jiop4uh" path="res://Scenes/halo.tscn" id="3_4avmt"]
+
+[node name="GameScene" type="Node2D" node_paths=PackedStringArray("GameBoard", "SelectedHalo", "TurnText")]
+script = ExtResource("1_d4ci6")
+GameBoard = NodePath("gameboard")
+SelectedHalo = NodePath("Halo")
+TurnText = NodePath("TurnText")
+
+[node name="gameboard" parent="." instance=ExtResource("1_halis")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(34, 22)
+zoom = Vector2(4, 4)
+
+[node name="Halo" parent="." instance=ExtResource("3_4avmt")]
+visible = false
+
+[node name="TurnText" type="RichTextLabel" parent="."]
+offset_left = -23.0
+offset_top = -38.0
+offset_right = 172.0
+offset_bottom = 7.0
+theme_override_font_sizes/normal_font_size = 16
+text = "Round 1 White's Turn"

@@ -1,0 +1,215 @@
+[gd_scene load_steps=7 format=3 uid="uid://b0u24bp2rc32v"]
+
+[ext_resource type="Texture2D" uid="uid://d2w6lkyvfu8e8" path="res://Assets/pixelCheckers _v1.0/boards/board_plain_05.png" id="1_4j0xo"]
+[ext_resource type="Script" path="res://Scripts/GameBoard.cs" id="2_jdert"]
+[ext_resource type="Texture2D" uid="uid://dphevxtyl5fj1" path="res://Assets/pixelCheckers _v1.0/boards/board_plain_04.png" id="2_q8g52"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fcl8n"]
+texture = ExtResource("1_4j0xo")
+margins = Vector2i(7, 7)
+0:0/next_alternative_id = 3
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+5:6/0 = 0
+6:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_22bel"]
+texture = ExtResource("2_q8g52")
+margins = Vector2i(7, 7)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+5:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_08tjk"]
+sources/2 = SubResource("TileSetAtlasSource_22bel")
+sources/0 = SubResource("TileSetAtlasSource_fcl8n")
+
+[node name="TileMap" type="TileMap"]
+tile_set = SubResource("TileSet_08tjk")
+format = 2
+layer_0/tile_data = PackedInt32Array(0, 65536, 1, 2, 0, 0, 131072, 0, 0, 131074, 0, 0, 65536, 65536, 0, 1, 65536, 0, 65538, 65536, 0, 131073, 65536, 0, 131075, 65536, 0, 3, 65536, 0, 196610, 65536, 0, 196608, 65536, 0, 196609, 0, 0, 196611, 0, 0, 65539, 0, 0, 65537, 0, 0, 196606, 0, 0, 131070, 0, 0, 65534, 0, 0, 5, 65536, 0, 65541, 65536, 0, 131077, 65536, 0)
+script = ExtResource("2_jdert")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_left = 3.0
+offset_top = 64.0
+offset_right = 15.0
+offset_bottom = 82.0
+theme_override_font_sizes/normal_font_size = 12
+text = "A"
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="."]
+offset_left = 20.0
+offset_top = 64.0
+offset_right = 34.0
+offset_bottom = 90.0
+theme_override_font_sizes/normal_font_size = 12
+text = "B"
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel3" type="RichTextLabel" parent="."]
+offset_left = 37.0
+offset_top = 64.0
+offset_right = 51.0
+offset_bottom = 90.0
+theme_override_font_sizes/normal_font_size = 12
+text = "C"
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel4" type="RichTextLabel" parent="."]
+offset_left = 52.0
+offset_top = 64.0
+offset_right = 66.0
+offset_bottom = 90.0
+theme_override_font_sizes/normal_font_size = 12
+text = "D"
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel5" type="RichTextLabel" parent="."]
+offset_left = -10.0
+offset_top = 48.0
+offset_bottom = 72.0
+theme_override_font_sizes/normal_font_size = 12
+text = "1"
+tab_size = 3
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel6" type="RichTextLabel" parent="."]
+offset_left = -10.0
+offset_top = 33.0
+offset_bottom = 57.0
+theme_override_font_sizes/normal_font_size = 12
+text = "2"
+tab_size = 3
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel7" type="RichTextLabel" parent="."]
+offset_left = -10.0
+offset_top = 17.0
+offset_bottom = 41.0
+theme_override_font_sizes/normal_font_size = 12
+text = "3"
+tab_size = 3
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel8" type="RichTextLabel" parent="."]
+offset_left = -10.0
+offset_bottom = 24.0
+theme_override_font_sizes/normal_font_size = 12
+text = "4"
+tab_size = 3
+metadata/_edit_use_anchors_ = true

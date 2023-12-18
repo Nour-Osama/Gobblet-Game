@@ -1,0 +1,8 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://bb3jrq48teukn"]
+
+[ext_resource type="Texture2D" uid="uid://bgx5ecd4tq3dw" path="res://Assets/pixelCheckers _v1.0/checkers Wood_v.png" id="1_ldi7p"]
+
+[resource]
+atlas = ExtResource("1_ldi7p")
+region = Rect2(49, 0, 15, 14)
+filter_clip = true
