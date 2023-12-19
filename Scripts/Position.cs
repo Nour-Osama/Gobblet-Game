@@ -33,4 +33,18 @@ public class Position
     {
         gobbletStack.Pop();
     }
+
+    public bool Equals(Position pos)
+    {
+        return x == pos.x && y == pos.y;
+    }
+
+    public bool In(List<Position> positions)
+    {
+        foreach (var pos in positions)
+        {
+            if (Equals(pos)) return true;
+        }
+        return false;
+    }
 }

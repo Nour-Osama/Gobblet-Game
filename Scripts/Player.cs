@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using Godot;
 
-public class Player
+public abstract class Player
 {
     private static readonly int GobbletSizeNum = 4; 
     private static readonly int GobbletNumPerSize= 3; 
     public List<List<Gobblet>> Gobblets;
     public bool white;
-    public Gobblet currGobblet;
     public Player(bool white)
     {
         GameBoard g = GameManager.Instance.GameBoard;
@@ -30,4 +29,18 @@ public class Player
             Gobblets.Add(gobblets);
         }
     }
+
+    public void setLegalMoves()
+    {
+        foreach (var gobbletStack in Gobblets)
+        {
+            foreach (var gobblet in gobbletStack)
+            {
+                gobblet.setLegalPositions();
+            }
+        }
+    }
+
+    public abstract void GobbletClicked(Position pos);
+    public abstract void StartTurn();
 }
