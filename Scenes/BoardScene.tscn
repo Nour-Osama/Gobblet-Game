@@ -144,72 +144,80 @@ layer_0/tile_data = PackedInt32Array(0, 65536, 1, 2, 0, 0, 131072, 0, 0, 131074,
 script = ExtResource("2_jdert")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
+texture_filter = 1
 offset_left = 3.0
 offset_top = 64.0
 offset_right = 15.0
 offset_bottom = 82.0
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 text = "A"
 metadata/_edit_use_anchors_ = true
 
 [node name="RichTextLabel2" type="RichTextLabel" parent="."]
+texture_filter = 1
 offset_left = 20.0
 offset_top = 64.0
 offset_right = 34.0
 offset_bottom = 90.0
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 text = "B"
 metadata/_edit_use_anchors_ = true
 
 [node name="RichTextLabel3" type="RichTextLabel" parent="."]
+texture_filter = 1
 offset_left = 37.0
 offset_top = 64.0
 offset_right = 51.0
 offset_bottom = 90.0
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 text = "C"
 metadata/_edit_use_anchors_ = true
 
 [node name="RichTextLabel4" type="RichTextLabel" parent="."]
+texture_filter = 1
 offset_left = 52.0
 offset_top = 64.0
 offset_right = 66.0
 offset_bottom = 90.0
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 text = "D"
 metadata/_edit_use_anchors_ = true
 
 [node name="RichTextLabel5" type="RichTextLabel" parent="."]
+texture_filter = 1
 offset_left = -10.0
 offset_top = 48.0
 offset_bottom = 72.0
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 text = "1"
 tab_size = 3
 metadata/_edit_use_anchors_ = true
 
 [node name="RichTextLabel6" type="RichTextLabel" parent="."]
+texture_filter = 1
 offset_left = -10.0
 offset_top = 33.0
 offset_bottom = 57.0
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 text = "2"
 tab_size = 3
 metadata/_edit_use_anchors_ = true
 
 [node name="RichTextLabel7" type="RichTextLabel" parent="."]
+texture_filter = 1
 offset_left = -10.0
 offset_top = 17.0
 offset_bottom = 41.0
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 text = "3"
 tab_size = 3
 metadata/_edit_use_anchors_ = true
 
 [node name="RichTextLabel8" type="RichTextLabel" parent="."]
+texture_filter = 1
 offset_left = -10.0
 offset_bottom = 24.0
-theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/normal_font_size = 16
 text = "4"
 tab_size = 3
 metadata/_edit_use_anchors_ = true

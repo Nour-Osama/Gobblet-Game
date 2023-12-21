@@ -38,12 +38,13 @@ public partial class GameManager : Node2D
 		// intiaize gamemanager instance
 		Instance = this;
 		// initilaize players 
-		whitePlayer = new HumanPlayer(true);
-		blackPlayer = new AIPlayer(false);
-		// initialize round params
-		round = new Round(whitePlayer);
-		finished = false;
-		GD.Print("Round " + round + " \tWhite Player turn\n");
+		
+		whitePlayer = new AIPlayer();
+		whitePlayer.Initialize(true,4);
+		blackPlayer = new AIPlayer();
+		blackPlayer.Initialize(false,4);
+		AddChild(whitePlayer);
+		AddChild(blackPlayer);
 		foreach (var gobbletType in whitePlayer.Gobblets)
 		{
 			foreach (var gobblet in gobbletType)
@@ -59,13 +60,14 @@ public partial class GameManager : Node2D
 				instantiateGobblet(gobblet);
 			}
 		}
+		// initialize round params
+		round = new Round(whitePlayer);
+		finished = false;
+		round.Player.StartTurn(blackPlayer);
+		GD.Print("Round " + round + " \tWhite Player turn\n");
 	}
 	
-	private bool checkWinning(Position pos, bool color)
-	{
-		bool win = false;
-		return GameBoard.checkRow(pos,color) == 4;
-	}
+
 	private void checkGameEnded()
 	{
 		bool whiteWon = false;
@@ -80,7 +82,7 @@ public partial class GameManager : Node2D
 				if (pos.GetGobblet() != null)
 				{
 					bool color = pos.GetGobblet().white;
-					if (checkWinning(pos, color))
+					if (GameBoard.checkWinning(pos, color))
 					{
 						finished = true;
 						if (pos.GetGobblet().white)
@@ -95,7 +97,7 @@ public partial class GameManager : Node2D
 		// if after movement both players won then the current player that moved piece loses
 		if (blackWon && whiteWon)
 		{
-			if (round.Player.white)
+			if (round.Player.whiteColor)
 			{
 				whiteWon = false;
 				GD.Print("Black Player Won the game");
@@ -122,15 +124,18 @@ public partial class GameManager : Node2D
 	private void endTurn()
 	{
 		// evaluate winning conditions
+		GD.Print("Current Board Evaluation " + GameBoard.Evaluate(round.OriginalPos,round.Pos));
 		checkGameEnded();
 		// reset current gobblet
 		ResetCurrGobblet();
 		// change round
 		Player newRoundPlayer = round.Player == whitePlayer ? blackPlayer : whitePlayer;
+		Player otherPlayer = round.Player == whitePlayer ? whitePlayer : blackPlayer;
 		round = new Round(newRoundPlayer);
-		string color = (round.Player.white) ? "White": "Black" ;
+		string color = (round.Player.whiteColor) ? "White": "Black" ;
 		if(!finished) TurnText.Text = "Round " + (int)Round.number + "  " + color + "'s turn";
-		round.Player.StartTurn();
+		else TurnText.Text += " after " + (int)Round.number + " Rounds";
+		round.Player.StartTurn(otherPlayer);
 	}
 	
 	private void setCurrentGobblet()
@@ -146,6 +151,7 @@ public partial class GameManager : Node2D
 	public void Gobblet_clicked(Position pos)
 	{
 		if (finished) return;
+		GD.Print("Pos Clicked " + pos);
 		round.AttemptToMove(pos);
 		round.SetGobblet(pos);
 		if (round.Gobblet != null) setCurrentGobblet();

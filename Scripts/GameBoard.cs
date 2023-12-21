@@ -5,22 +5,32 @@ using System.Diagnostics;
 
 public partial class GameBoard : TileMap
 {
+	private static readonly int WIN_SCORE = 20000;
 	private Position[][] board;
+	private Evaluation evaluation;
 
+	public Evaluation Evaluation => evaluation;
+
+	private List<Position> validPositions;
 	private static readonly (int min,int max) width = (-2,5);
 	public static readonly int height = 4;
 	// Called when the node enters the scene tree for the first time.
+	
+
 	public void Initialize()
 	{
 		board = new Position[width.max- width.min +1][];
+		validPositions = new List<Position>();
 		for (int i = 0; i <= width.max- width.min; i++)
 		{
 			board[i] = new Position[height];
 			for (int j = 0; j < height; j++)
 			{
 				board[i][j] = new Position(i+width.min, j);
+				if(IsPositionValid(board[i][j])) validPositions.Add(board[i][j]);
 			}
 		}
+		evaluation = new Evaluation(height); 
 		// GameManager.Instance.initialize();
 	}
 
@@ -40,7 +50,14 @@ public partial class GameBoard : TileMap
 		   }
 		}
 	}
-
+	public bool IsPositionValid(Position pos)
+	{
+		if (pos != null && pos.y < height && pos.y >= 0 && pos.x < height && pos.x >= 0)
+		{
+			return true;
+		}
+		return false;
+	}
 	public Position getPos(Vector2 tilePos)
 	{
 		//GD.Print("Positions:\t(" + tilePos.X + ", "+ tilePos.Y +")");
@@ -53,18 +70,10 @@ public partial class GameBoard : TileMap
 	}
 	public Position getPos(Position pos)
 	{
+		if (pos == null) return null;
 		return getPos(new Vector2(pos.x,pos.y));
 	}
 
-	public bool IsPositionValid(Position pos)
-	{
-		if (pos.y < height && pos.y >= 0
-		                    && pos.x < height && pos.x >= 0)
-		{
-			return true;
-		}
-		return false;
-	}
 	private bool checkPosition(int x, int y, bool color)
 	{
 		Position new_pos = getPos(new Position(x, y));
@@ -146,10 +155,17 @@ public partial class GameBoard : TileMap
 	}
 	private int checkDiagonal(Position pos, bool color)
 	{
-		Position positive_anchor_pos = getAnchorPos(pos, 1, -1);
-		Position neg_anchor_pos = getAnchorPos(pos, -1, -1);
-		int pos_anchor_count = getAnchorPosCount(positive_anchor_pos,-1,1,color);
-		int neg_anchor_count = getAnchorPosCount(neg_anchor_pos,1,1,color);
+		int pos_anchor_count = 0, neg_anchor_count = 0;
+		if (pos.x + pos.y == height-1)
+		{
+			Position positive_anchor_pos = getAnchorPos(pos, 1, -1);
+			pos_anchor_count = getAnchorPosCount(positive_anchor_pos,-1,1,color); 	
+		}
+		if (pos.x == pos.y)
+		{
+			Position neg_anchor_pos = getAnchorPos(pos, -1, -1);
+			neg_anchor_count = getAnchorPosCount(neg_anchor_pos,1,1,color);	
+		}
 		return pos_anchor_count > neg_anchor_count ? pos_anchor_count:neg_anchor_count;
 	}
 	public int checkRow(Position pos, bool color)
@@ -166,4 +182,34 @@ public partial class GameBoard : TileMap
 		max_count = max_count < count ? count : max_count;
 		return max_count;
 	}
+	public bool checkWinning(Position pos, bool color)
+	{
+		bool win = false;
+		return checkRow(pos,color) == 4;
+	}
+	public int EvaluateNaive()
+	{
+		int score = 0;
+		foreach (var pos in validPositions)
+		{
+			Gobblet gobblet = pos.GetGobblet();
+			// if it is not empty
+			if (gobblet != null)
+			{
+				// Partial row heuristic
+				int partial_row = gobblet.size * checkRow(pos, gobblet.white);
+				int gobblet_score = (partial_row >= 4) ? WIN_SCORE : (int)Math.Pow(partial_row, 2);
+				gobblet_score = gobblet.white ? gobblet_score : -1 * gobblet_score;
+				score += gobblet_score;
+			}
+		}
+		return score;
+	}
+
+	public int Evaluate(Position originalPos, Position newPos)
+	{
+		evaluation.UpdateEvalPos(originalPos,newPos);
+		return evaluation.CurrEval;
+	}
+    
 }

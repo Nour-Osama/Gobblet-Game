@@ -10,8 +10,6 @@ public partial class Gobblet
     public bool white;
     public int size;
     public Position pos;
-    public List<Position> LegalPositions { get; set; }
-
     public Gobblet(bool white, int size, Position pos)
     {
         GobbletScene = GD.Load<PackedScene>("res://Scenes/goblet" + size +".tscn");
@@ -23,19 +21,19 @@ public partial class Gobblet
 
     public void move(Position pos)
     {
+        pos = GameManager.Instance.GameBoard.getPos(pos);
         // push gobblet to new position 
         pos.PushGobblet(this);
         // pop original position
         this.pos.PopGobblet();
-        // change gobblet position visually and in code
+        // change gobblet position 
         this.pos = pos;
-        GobletScene.move(pos);
     }
 
-    public void setLegalPositions()
+    public List<Position> GetLegalPositions()
     {
         GameBoard g = GameManager.Instance.GameBoard;
-        LegalPositions = new List<Position>();
+        List<Position> LegalPositions = new List<Position>();
         // if goblet is exposed then it has legal moves otherwise it doesn't 
         if (pos.GetGobblet() == this)
         {
@@ -83,6 +81,7 @@ public partial class Gobblet
                 }
             }
         }
+        return LegalPositions;
     }
     public bool isExternal()
     {

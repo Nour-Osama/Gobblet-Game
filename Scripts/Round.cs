@@ -1,4 +1,7 @@
 
+using System.Collections.Generic;
+using Godot;
+
 public class Round
 {
     private bool real;
@@ -8,7 +11,6 @@ public class Round
     {
         this.player = player;
         this.real = real;
-        player.setLegalMoves();
         gobblet = null;
         pos = null;
         moved = false;
@@ -18,6 +20,9 @@ public class Round
     private Position pos;
     private Player player;
     private bool moved;
+    private Position originalPos;
+    private List<Position> LegalPositions;
+    public Position OriginalPos => originalPos;
 
     public bool Moved => moved;
 
@@ -32,13 +37,35 @@ public class Round
         this.pos = pos;
         if(gobblet != null && GameManager.Instance.GameBoard.IsPositionValid(pos)) moveSequence();
     }
-    public void moveSequence()
+    private void moveSequence()
     {
-        if (Pos.In(Gobblet.LegalPositions))
+        if (Pos.In(LegalPositions))
         {
+            originalPos = Gobblet.pos;
             Gobblet.move(Pos);
-            if (real) number += 0.5;
+            if (real)
+            {
+                number += 0.5;
+                Gobblet.GobletScene.move(Pos);
+            }
             moved = true;
+        }
+    }
+
+    public void AnteMove()
+    {
+        if (moved)
+        {
+            moved = false;
+            Gobblet.move(originalPos);
+            string originalNotNull = originalPos.GetGobblet() != null ? "true" : "false";
+            string posNotNull = pos.GetGobblet() != null ? "true" : "false";
+          //  GD.Print("Ante Move to original pos " + originalPos + " not null: " + originalNotNull
+         //   + "\tNew pos " + pos + " not null: " + posNotNull);
+        }
+        else
+        {
+           // GD.Print("AntiMove FAILED original pos " + originalPos + "\tNew pos " + pos );
         }
     }
     public void SetGobblet(Position pos)
@@ -46,11 +73,12 @@ public class Round
         Gobblet posGobblet = pos.GetGobblet();
         if (posGobblet != null)
         {
-            if (posGobblet.white == Player.white)
+            if (posGobblet.white == Player.whiteColor)
             {
                 bool firstSelection = Gobblet == null;
                 bool externalSelection = posGobblet.isExternal();
-                gobblet = firstSelection || externalSelection ? posGobblet:Gobblet;    
+                gobblet = firstSelection || externalSelection ? posGobblet:Gobblet;
+                LegalPositions = gobblet.GetLegalPositions();
             }
         }
     }

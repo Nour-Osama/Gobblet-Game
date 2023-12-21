@@ -1,21 +1,49 @@
 
-public class AIPlayer:Player
+using System.Threading.Tasks;
+
+public partial class AIPlayer:Player
 {
-    public AIPlayer(bool white) : base(white)
+    private GameAction currBestAction;
+    private int depth;
+    public override void Initialize(bool white, int difficulty)
     {
+        base.Initialize(white,difficulty);
+        currBestAction = null;
+    }
+
+    public override void _Process(double delta)
+    {
+        if (currBestAction != null)
+        {
+            setLegalMoves();
+            GameManager.Instance.Gobblet_clicked(currBestAction.Gobblet.pos);
+            GameManager.Instance.Gobblet_clicked(currBestAction.Pos);
+            currBestAction = null;
+        }
     }
 
     public override void GobbletClicked(Position pos) { }
 
-    public override void StartTurn()
+    public override void StartTurn(Player otherPlayer)
     {
-        (Position g, Position p) action = getAction();
-        GameManager.Instance.Gobblet_clicked(action.g);
-        GameManager.Instance.Gobblet_clicked(action.p);
+        
+        Player whitePlayer = whiteColor ? this : otherPlayer;
+        Player blackPlayer = whiteColor ? otherPlayer : this;
+        BestAction(whitePlayer, blackPlayer);
+    }
+
+    private async Task BestAction(Player whitePlayer, Player blackPlayer)
+    {
+        await Task.Run(() =>
+        {
+            MinMaxScore minMaxScore = new MinMaxScore(whitePlayer, blackPlayer, whiteColor, difficulty);
+            currBestAction = minMaxScore.CurrBestAction;
+        });
     }
     // TODO: replace with minmax algorithim later
     // stub function that returns first legal action found
-    private (Position g, Position p) getAction()
+    /*
+    private GameAction getAction()
     {
         Gobblet g = null;
         foreach (var gobbletStack in Gobblets)
@@ -31,6 +59,7 @@ public class AIPlayer:Player
             if (g != null) break;
         }
         Position p = GameManager.Instance.GameBoard.getPos(g.LegalPositions[0]);
-        return (g.pos, p);
-    }
+        return new GameAction(g, p);
+    }*/
+
 }
