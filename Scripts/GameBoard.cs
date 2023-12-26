@@ -8,6 +8,7 @@ public partial class GameBoard : TileMap
 	private static readonly int WIN_SCORE = 20000;
 	private Position[][] board;
 	private Evaluation evaluation;
+	
 
 	public Evaluation Evaluation => evaluation;
 
@@ -187,6 +188,14 @@ public partial class GameBoard : TileMap
 		bool win = false;
 		return checkRow(pos,color) == 4;
 	}
+
+	public bool checkDraw()
+	{
+		bool draw = false;
+		
+		
+		return draw;
+	}
 	public int EvaluateNaive()
 	{
 		int score = 0;
@@ -205,10 +214,15 @@ public partial class GameBoard : TileMap
 		}
 		return score;
 	}
-
-	public int Evaluate(Position originalPos, Position newPos)
+	
+	public int Evaluate(Position originalPos, Position newPos,bool whiteTurn)
 	{
-		evaluation.UpdateEvalPos(originalPos,newPos);
+		evaluation.UpdatePos(originalPos,newPos);
+		evaluation.UpdateEval(whiteTurn);
+		/*foreach (var move in Evaluation.Moves)
+		{
+			GD.Print(move);
+		}*/
 		return evaluation.CurrEval;
 	}
     

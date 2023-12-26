@@ -25,9 +25,39 @@ public class MinMaxScore
         GD.Print("Curr Eval before MiniMax: " + evaluation.CurrEval);
         bestEval = MiniMaxPruning(depth,alpha,beta,whiteTurn);
         //bestEval = MiniMax(depth,whiteTurn,false);
+        evaluation.UpdateEval(!whiteTurn);
         GD.Print("Curr Eval After MiniMax: " + evaluation.CurrEval);
         GD.Print("Best Evaluation for a depth of " + depth + " is " +bestEval);
-        GD.Print("Best gobblet on " + currBestAction.Gobblet.pos + " and best position is " + currBestAction.Pos);
+        GD.Print("Best gobblet on " + currBestAction.Gobblet.pos + " and best position is " + currBestAction.NewPos);
+    }
+    private void SimulateRound(Round simRound,Gobblet gobblet, Position pos)
+    {
+        simRound.SetGobblet(gobblet.pos);
+        simRound.AttemptToMove(pos);
+        //  GD.Print("Depth " + depth+" Curr Eval before Move: " + evaluation.CurrEval);
+        // update position
+        evaluation.UpdatePos(simRound.OriginalPos, simRound.Pos);
+        // update eval
+        evaluation.UpdateEval(simRound.Player.whiteColor);
+        //GD.Print("Depth " + depth+" Curr Eval after Move: " + evaluation.CurrEval);
+    }
+    private int MinMaxEvalCalc(Player player,int depth, bool whiteTurn, Gobblet gobblet, Position pos,
+        int alpha = 0, int beta = 0,bool alphaBeta = true)
+    {
+        Round simRound = new Round(player, false);
+        SimulateRound(simRound, gobblet, pos);
+        if (alphaBeta)
+        {
+            int eval = MiniMaxPruning(depth - 1, alpha, beta, !whiteTurn);
+            simRound.AnteMove(evaluation);
+            return eval;
+        }
+        else
+        {
+            int eval = MiniMax(depth - 1, !whiteTurn);
+            simRound.AnteMove(evaluation);
+            return eval;
+        }
     }
     private int MiniMaxPruning(int depth,int alpha, int beta, bool whiteTurn)
     {
@@ -46,18 +76,11 @@ public class MinMaxScore
                     List<Position> LegalPositions = gobblet.GetLegalPositions();
                     foreach (var pos in LegalPositions)
                     {
-                     //   GD.Print("Depth " + depth+" Curr Eval before Move: " + evaluation.CurrEval);
-                        Round simRound = new Round(white, false);
-                        simRound.SetGobblet(gobblet.pos);
-                        simRound.AttemptToMove(pos);
-                        //gameFinished = GameManager.Instance.GameBoard.checkWinning(pos, whiteTurn);
-                        evaluation.UpdateEvalPos(simRound.OriginalPos,simRound.Pos);
-                     //   GD.Print("Depth " + depth+" Curr Eval after Move: " + evaluation.CurrEval);
-                        int eval = MiniMaxPruning(depth - 1, alpha,beta,!whiteTurn);
-                      //  GD.Print("val after Move: " + eval);
-                        simRound.AnteMove();
-                        evaluation.UpdateEvalPos(simRound.OriginalPos,simRound.Pos);
-                     //   GD.Print("Depth " + depth+" Curr Eval after AnteMove: " + evaluation.CurrEval);
+                        var eval = MinMaxEvalCalc(white,depth,whiteTurn, gobblet, pos, alpha, beta);
+                       /* if (alpha == eval)
+                        {
+                            changeBestAction(depth,white, gobblet, pos);
+                        }*/
                         if (alpha < eval)
                         {
                             alpha = eval;
@@ -75,7 +98,6 @@ public class MinMaxScore
         }
         else
         {
-            black.setLegalMoves();
             foreach (var gobbletStack in black.Gobblets)
             {
                 foreach (var gobblet in gobbletStack)
@@ -83,28 +105,20 @@ public class MinMaxScore
                     List<Position> LegalPositions = gobblet.GetLegalPositions();
                     foreach (var pos in LegalPositions)
                     {
-                       // GD.Print("Depth " + depth+" Curr Eval before Move: " + evaluation.CurrEval);
-                        Round simRound = new Round(black, false);
-                        simRound.SetGobblet(gobblet.pos);
-                        simRound.AttemptToMove(pos);
-                        evaluation.UpdateEvalPos(simRound.OriginalPos,simRound.Pos);
-                        //gameFinished = GameManager.Instance.GameBoard.checkWinning(pos, whiteTurn);
-                      //  GD.Print("Depth " + depth+" Curr Eval after Move: " + evaluation.CurrEval);
-                        int eval = MiniMaxPruning(depth - 1, alpha,beta,!whiteTurn);
-                       // GD.Print("Curr Eval after Move: " + evaluation.CurrEval);
-                        simRound.AnteMove();
-                        evaluation.UpdateEvalPos(simRound.OriginalPos,simRound.Pos);
-                      //  GD.Print("Depth " + depth+" Curr Eval after AnteMove: " + evaluation.CurrEval);
+                        var eval = MinMaxEvalCalc(black,depth, whiteTurn, gobblet, pos,alpha, beta);
+                        /*if (beta == eval)
+                        {
+                            changeBestAction(depth,black, gobblet, pos); 
+                        }*/
                         if (beta > eval)
                         {
-                    //        GD.Print("CURR BEST EVAL: " + eval);
                             beta = eval;
                             if (this.depth == depth)
                             {
                                 GD.Print("CURR BEST EVAL: " + eval);
                                 currBestAction = new GameAction(gobblet,pos);
                             }
-                        } 
+                        }
                         if (beta<= alpha) return beta;
                     }
                 }
@@ -112,13 +126,40 @@ public class MinMaxScore
             return beta;
         }
     }
-    private int MiniMax(int depth, bool whiteTurn, bool gameFinished)
+
+    private void changeBestAction(int depth,Player player, Gobblet gobblet, Position pos)
     {
-        GameBoard g = GameManager.Instance.GameBoard;
-        // base case
-        if (depth == 0 || gameFinished)
+        if (this.depth == depth)
         {
-            return g.EvaluateNaive();
+            Round currBestActionRound = new Round(player, false);
+            SimulateRound(currBestActionRound, currBestAction.Gobblet, currBestAction.NewPos);
+            int currBestEval = evaluation.CurrEval;
+            currBestActionRound.AnteMove(evaluation);
+            Round currActionRound = new Round(player, false);
+            SimulateRound(currActionRound, gobblet, pos);
+            int currEval = evaluation.CurrEval;
+            currActionRound.AnteMove(evaluation);
+            if (currEval > currBestEval && player.whiteColor)
+            {
+                GD.Print("CURR BEST EVAL after 1 move is " + currBestEval + " for move " + currBestAction);
+                currBestAction = new GameAction(gobblet, pos);
+                GD.Print("Eval for new move is " + currEval + " for move " + currBestAction);
+            }
+            else if (currEval < currBestEval && !player.whiteColor)
+            {
+                GD.Print("CURR BEST EVAL after 1 move is " + currBestEval + " for move " + currBestAction);
+                currBestAction = new GameAction(gobblet, pos);
+                GD.Print("Eval for new move is " + currEval + " for move " + currBestAction);
+            }
+        }
+    }
+
+    private int MiniMax(int depth, bool whiteTurn)
+    {
+        // base case : max depth or game finished
+        if (depth == 0 || evaluation.GameFinished())
+        {
+            return evaluation.CurrEval;
         }
         if (whiteTurn)
         {
@@ -130,12 +171,7 @@ public class MinMaxScore
                     List<Position> LegalPositions = gobblet.GetLegalPositions();
                     foreach (var pos in LegalPositions)
                     {
-                        Round simRound = new Round(white, false);
-                        simRound.SetGobblet(gobblet.pos);
-                        simRound.AttemptToMove(pos);
-                        gameFinished = GameManager.Instance.GameBoard.checkWinning(pos, whiteTurn);
-                        int eval = MiniMax(depth - 1, !whiteTurn,gameFinished);
-                        simRound.AnteMove();
+                        int eval = MinMaxEvalCalc(white, depth, whiteTurn, gobblet, pos, alphaBeta: false);
                         if (maxEval < eval)
                         {
                             maxEval = eval;
@@ -156,12 +192,7 @@ public class MinMaxScore
                     List<Position> LegalPositions = gobblet.GetLegalPositions();
                     foreach (var pos in LegalPositions)
                     {
-                        Round simRound = new Round(black, false);
-                        simRound.SetGobblet(gobblet.pos);
-                        simRound.AttemptToMove(pos);
-                        gameFinished = GameManager.Instance.GameBoard.checkWinning(pos, whiteTurn);
-                        int eval = MiniMax(depth - 1, !whiteTurn,gameFinished);
-                        simRound.AnteMove();
+                        int eval = MinMaxEvalCalc(black, depth, whiteTurn, gobblet, pos, alphaBeta: true);
                         if (minEval > eval)
                         {
                             minEval = eval;

@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class GameManager : Node2D
 {
@@ -40,9 +41,9 @@ public partial class GameManager : Node2D
 		// initilaize players 
 		
 		whitePlayer = new AIPlayer();
-		whitePlayer.Initialize(true,4);
+		whitePlayer.Initialize(true,2);
 		blackPlayer = new AIPlayer();
-		blackPlayer.Initialize(false,4);
+		blackPlayer.Initialize(false,2);
 		AddChild(whitePlayer);
 		AddChild(blackPlayer);
 		foreach (var gobbletType in whitePlayer.Gobblets)
@@ -66,8 +67,31 @@ public partial class GameManager : Node2D
 		round.Player.StartTurn(blackPlayer);
 		GD.Print("Round " + round + " \tWhite Player turn\n");
 	}
-	
 
+	private void checkGameEnded()
+	{
+		if (GameBoard.Evaluation.GameFinished())
+		{
+			finished = true;
+			if (GameBoard.Evaluation.BlackWon)
+			{
+				GD.Print("Black Player Won the game");
+				TurnText.Text = "Black Player Won the game";
+			}
+			else if (GameBoard.Evaluation.WhiteWon)
+			{
+				GD.Print("White Player Won the game");
+				TurnText.Text = "White Player Won the game";
+			}
+			else
+			{
+				GD.Print("Draw By Repetition");
+				TurnText.Text = "Draw By Repetition";
+			}
+		}
+	}
+
+	/*
 	private void checkGameEnded()
 	{
 		bool whiteWon = false;
@@ -120,11 +144,13 @@ public partial class GameManager : Node2D
 			GD.Print("White Player Won the game");
 			TurnText.Text = "White Player Won the game";
 		}
-	}
+	}*/
 	private void endTurn()
 	{
+		// evaluate board to determine evaluation score and finishing conditions
+		int eval = GameBoard.Evaluate(round.OriginalPos, round.Pos, round.Player.whiteColor);
 		// evaluate winning conditions
-		GD.Print("Current Board Evaluation " + GameBoard.Evaluate(round.OriginalPos,round.Pos));
+		GD.Print("Current Board Evaluation " + eval);
 		checkGameEnded();
 		// reset current gobblet
 		ResetCurrGobblet();

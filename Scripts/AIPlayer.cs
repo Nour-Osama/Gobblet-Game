@@ -17,7 +17,7 @@ public partial class AIPlayer:Player
         {
             setLegalMoves();
             GameManager.Instance.Gobblet_clicked(currBestAction.Gobblet.pos);
-            GameManager.Instance.Gobblet_clicked(currBestAction.Pos);
+            GameManager.Instance.Gobblet_clicked(currBestAction.NewPos);
             currBestAction = null;
         }
     }

@@ -87,4 +87,9 @@ public partial class Gobblet
     {
         return !GameManager.Instance.GameBoard.IsPositionValid(pos);
     }
+
+    public override string ToString()
+    {
+        return "Color: " + (white ? "white" : "black") + " size: " + size;
+    }
 }
