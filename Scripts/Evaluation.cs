@@ -244,7 +244,7 @@ public class Evaluation
            if (!moveRepeated || !sameGobblet) return false;
           // GD.Print(i + " Move repeated");   
         }
-       // GD.Print("Draw by repetition");
+         // GD.Print("Draw by repetition");
         return true;
     }
     public bool GameFinished()

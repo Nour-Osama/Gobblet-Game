@@ -1,20 +1,30 @@
 
-
-using System;
 using System.Collections.Generic;
 using Godot;
 
-public class MinMaxScore:AbstractMinMaxScore
+public class MinMaxScorePruning: MinMaxScore
 {
-    public MinMaxScore(Player white, Player black, int maxDepth)
-    :base(white,black,maxDepth){}
-
-    protected override void MiniMax(int currDepth, bool whiteTurn)
+    public MinMaxScorePruning(Player white, Player black, int maxDepth)
+    :base(white,black,maxDepth)
     {
-        bestEval = MiniMaxCalc(currDepth, whiteTurn);
     }
-
-    protected override int MiniMaxCalc(int depth, bool whiteTurn)
+    protected override void MiniMax(int currDepth,bool whiteTurn)
+    {
+        int alpha = int.MinValue;
+        int beta = int.MaxValue;
+        maxCurrDepth = currDepth;
+        bestEval = MiniMaxPruning(maxCurrDepth,alpha,beta,whiteTurn);
+    }
+     private int MinMaxEvalCalc(Player player,int depth, bool whiteTurn, Gobblet gobblet, Position pos,
+        int alpha , int beta )
+    {
+        Round simRound = new Round(player, false);
+        SimulateRound(simRound, gobblet, pos);
+        int eval = MiniMaxPruning(depth - 1, alpha, beta, !whiteTurn);
+        simRound.AnteMove(evaluation);
+        return eval;
+    }
+    private int MiniMaxPruning(int depth,int alpha, int beta, bool whiteTurn)
     {
         // base case : max depth or game finished
         if (depth == 0 || evaluation.GameFinished())
@@ -23,7 +33,6 @@ public class MinMaxScore:AbstractMinMaxScore
         }
         if (whiteTurn)
         {
-            int maxEval = Int32.MinValue;
             foreach (var gobbletStack in white.Gobblets)
             {
                 foreach (var gobblet in gobbletStack)
@@ -31,24 +40,25 @@ public class MinMaxScore:AbstractMinMaxScore
                     List<Position> LegalPositions = gobblet.GetLegalPositions();
                     foreach (var pos in LegalPositions)
                     {
-                        int eval = MinMaxEvalCalc(white, depth, whiteTurn, gobblet, pos);
-                        if (maxEval < eval)
+                        var eval = MinMaxEvalCalc(white,depth,whiteTurn, gobblet, pos, alpha, beta);
+
+                        if (alpha < eval)
                         {
-                            maxEval = eval;
+                            alpha = eval;
                             if (this.maxCurrDepth == depth)
                             {
                                 GD.Print("CURR BEST EVAL: " + eval);
                                 currBestAction = new GameAction(gobblet,pos);
                             }
                         }
+                        if (beta<= alpha) return alpha;
                     }
                 }
             }
-            return maxEval;
+            return alpha;
         }
         else
         {
-            int minEval = Int32.MaxValue;
             foreach (var gobbletStack in black.Gobblets)
             {
                 foreach (var gobblet in gobbletStack)
@@ -56,20 +66,22 @@ public class MinMaxScore:AbstractMinMaxScore
                     List<Position> LegalPositions = gobblet.GetLegalPositions();
                     foreach (var pos in LegalPositions)
                     {
-                        int eval = MinMaxEvalCalc(black, depth, whiteTurn, gobblet, pos);
-                        if (minEval > eval)
+                        var eval = MinMaxEvalCalc(black,depth, whiteTurn, gobblet, pos,alpha, beta);
+                        if (beta > eval)
                         {
-                            minEval = eval;
+                            beta = eval;
                             if (this.maxCurrDepth == depth)
                             {
                                 GD.Print("CURR BEST EVAL: " + eval);
                                 currBestAction = new GameAction(gobblet,pos);
                             }
-                        }                    
+                        }
+                        if (beta<= alpha) return beta;
                     }
                 }
             }
-            return minEval;
+            return beta;
         }
     }
+
 }

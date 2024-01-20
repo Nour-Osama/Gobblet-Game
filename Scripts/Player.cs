@@ -7,15 +7,13 @@ public abstract partial class Player:Node2D
     private static readonly int GobbletNumPerSize= 3; 
     public List<List<Gobblet>> Gobblets;
     public bool whiteColor;
-    protected int difficulty;
     public override void _Ready()
     {
         
     }
 
-    public virtual void Initialize(bool whiteColor,int difficulty = -1)
+    public void Initialize(bool whiteColor)
     {
-        this.difficulty = difficulty;
         GameBoard g = GameManager.Instance.GameBoard;
         this.whiteColor = whiteColor;
         Gobblets = new List<List<Gobblet>>();

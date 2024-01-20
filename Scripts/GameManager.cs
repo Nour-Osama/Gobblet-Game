@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 public partial class GameManager : Node2D
 {
@@ -40,10 +41,21 @@ public partial class GameManager : Node2D
 		Instance = this;
 		// initilaize players 
 		
+		
+		// TODO: replace with gui buttons choices
 		whitePlayer = new AIPlayer();
-		whitePlayer.Initialize(true,2);
+		whitePlayer.Initialize(true);
 		blackPlayer = new AIPlayer();
-		blackPlayer.Initialize(false,2);
+		blackPlayer.Initialize(false);
+		if (whitePlayer is AIPlayer)
+		{
+			((AIPlayer)whitePlayer).MinMaxScore = new MinMaxScoreIterative(whitePlayer, blackPlayer, 13,4);
+		}
+		if (blackPlayer is AIPlayer)
+		{
+			((AIPlayer)blackPlayer).MinMaxScore = new MinMaxScoreIterative(whitePlayer, blackPlayer, 13,4);
+		}
+		
 		AddChild(whitePlayer);
 		AddChild(blackPlayer);
 		foreach (var gobbletType in whitePlayer.Gobblets)
@@ -163,7 +175,7 @@ public partial class GameManager : Node2D
 		else TurnText.Text += " after " + (int)Round.number + " Rounds";
 		round.Player.StartTurn(otherPlayer);
 	}
-	
+
 	private void setCurrentGobblet()
 	{
 		Position pos = round.Gobblet.pos;
