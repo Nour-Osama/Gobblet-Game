@@ -11,7 +11,7 @@ public class Evaluation
     private int[] evalRowsValues;
     private static readonly int evalRowsCount = 10;
     private static readonly int repetition = 3;
-    public static readonly int MAX_SCORE = 50000;
+    private static readonly int MAX_SCORE = 50000;
     private static readonly int rowIdx = 4;
     private static readonly int posDiagIdx = 8;
     private static readonly int negDiagIdx = 9;
@@ -25,7 +25,7 @@ public class Evaluation
     private bool blackWon;
     private List<GameAction> moves;
 
-    public List<GameAction> Moves => moves;
+    private List<GameAction> Moves => moves;
 
     public int CurrEval => currEval;
 
@@ -51,46 +51,6 @@ public class Evaluation
         blackWon = false;
     }
 
-    /*private void CalcCurrEvalSingleRow(int idx)
-    {
-        // subtract original value
-        currEval -= evalRowsValues[idx];
-        int whiteSizeSum = 0;
-        int blackSizeSum = 0;
-        int whiteCount = 0;
-        int blackCount = 0;
-        // update new value
-        foreach (var piece in evalRows[idx])
-        {
-            if (piece.s > 0)
-            {
-                if (piece.w)
-                {
-                    whiteSizeSum += 1;
-                    whiteCount += 1;
-                }
-                else
-                {
-                    blackSizeSum += 1;
-                    blackCount += 1;
-                }
-            }
-        }
-        /* eval =
-            {
-              if C < 4 : C * Sum(S)^2
-              else 20,000
-            } 
-            positive if white, negative if black
-            C = partial row count
-            S =  gobblet size
-         #1#
-        int whiteRowEval = whiteCount < 4 ? whiteCount * whiteSizeSum * whiteSizeSum:MAX_SCORE;
-        int blackRowEval = blackCount < 4 ? -1 * blackCount * blackSizeSum * blackSizeSum:-MAX_SCORE;
-        evalRowsValues[idx] = whiteRowEval + blackRowEval;
-        currEval += evalRowsValues[idx];
-    }*/
-    
     private (int eval, int whiteCount, int blackCount) CalcEvalSingleRow(int idx)
     {
         int whiteSizeSum = 0;
@@ -113,14 +73,7 @@ public class Evaluation
                 }
             }
         }
-        /* eval =
-            {
-              C * Sum(S)^2
-            }
-            positive if white, negative if black
-            C = partial row count
-            S =  gobblet size
-         */
+
         int whiteRowEval = whiteCount < 4 ? whiteCount * whiteSizeSum * whiteSizeSum:MAX_SCORE;
         int blackRowEval =  blackCount < 4  ? -1 * blackCount * blackSizeSum * blackSizeSum:-MAX_SCORE;
         return (whiteRowEval + blackRowEval,whiteCount,blackCount);

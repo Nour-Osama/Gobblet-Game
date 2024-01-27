@@ -5,7 +5,6 @@ using System.Diagnostics;
 
 public partial class GameBoard : TileMap
 {
-	private static readonly int WIN_SCORE = 20000;
 	private Position[][] board;
 	private Evaluation evaluation;
 	
@@ -183,46 +182,12 @@ public partial class GameBoard : TileMap
 		max_count = max_count < count ? count : max_count;
 		return max_count;
 	}
-	public bool checkWinning(Position pos, bool color)
-	{
-		bool win = false;
-		return checkRow(pos,color) == 4;
-	}
 
-	public bool checkDraw()
-	{
-		bool draw = false;
-		
-		
-		return draw;
-	}
-	public int EvaluateNaive()
-	{
-		int score = 0;
-		foreach (var pos in validPositions)
-		{
-			Gobblet gobblet = pos.GetGobblet();
-			// if it is not empty
-			if (gobblet != null)
-			{
-				// Partial row heuristic
-				int partial_row = gobblet.size * checkRow(pos, gobblet.white);
-				int gobblet_score = (partial_row >= 4) ? WIN_SCORE : (int)Math.Pow(partial_row, 2);
-				gobblet_score = gobblet.white ? gobblet_score : -1 * gobblet_score;
-				score += gobblet_score;
-			}
-		}
-		return score;
-	}
 	
 	public int Evaluate(Position originalPos, Position newPos,bool whiteTurn)
 	{
 		evaluation.UpdatePos(originalPos,newPos);
 		evaluation.UpdateEval(whiteTurn);
-		/*foreach (var move in Evaluation.Moves)
-		{
-			GD.Print(move);
-		}*/
 		return evaluation.CurrEval;
 	}
     

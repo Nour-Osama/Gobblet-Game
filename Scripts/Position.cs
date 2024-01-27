@@ -7,7 +7,7 @@ public class Position
 {
     public int x;
     public int y;
-    public Stack<Gobblet> gobbletStack;
+    private Stack<Gobblet> gobbletStack;
 
     public Position(int x, int y)
     {

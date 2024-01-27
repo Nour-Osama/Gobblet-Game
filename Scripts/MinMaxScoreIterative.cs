@@ -28,8 +28,8 @@ public class MinMaxScoreIterative:MinMaxScorePruning
             base.MiniMax(i,whiteTurn);
             long elapsedTime = GetElapsedTime();
             GD.Print("Current elapsed Time in Milliseconds: " + elapsedTime);
-            if (elapsedTime >= timeLimit) break;
-            // if time limit wasn't reached after iteration is finished then update best action for this iteration
+            if (elapsedTime >= timeLimit && i > 1) break;
+            // if time limit wasn't reached first iteration is finished then update best action for this iteration
             bestAction = currBestAction;
         }
         // assign best action to last successful depth that is completely finished

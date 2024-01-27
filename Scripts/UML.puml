@@ -1,0 +1,240 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Node2D{}
+class TileMap{}
+
+class GameManager {
+    - Round: round
+    - finished: bool
+    {static} + Instance: GameManager
+    + Round: Round
+    + GameBoard: GameBoard
+    - StartNewGame(): void
+    - ExitGame(): void
+    - checkGameEnded(): void
+    - endTurn(): void
+    - setCurrentGobblet(): void
+    - ResetCurrGobblet(): void
+    + Gobblet_clicked(pos: Position): void
+    + _Ready(): void
+    + _Process(delta: double): void
+}
+Node2D <|-- GameManager
+
+class Round {
+    - real: bool
+    - gobblet: Gobblet
+    - pos: Position
+    - player: Player
+    - moved: bool
+    - originalPos: Position
+    - LegalPositions: List<Position>
+    {static} + number: double
+    + OriginalPos: Position
+    + Moved: bool
+    + Gobblet: Gobblet
+    + Pos: Position
+    + Player: Player
+    - moveSequence(): void
+    + Round(player : Player, real: bool)
+    + AttemptToMove(pos: Position): void
+    + AnteMove(evaluation: Evaluation): void
+    + SetGobblet(pos: Position): void
+    + ResetGobblet(): void
+}
+GameManager *-- Round
+Round o-- Position
+Round o-- Gobblet
+Round o-- Player
+
+abstract class Player{
+    - {static} GobbletSizeNum :int
+    - {static}  GobbletNumPerSize: int  
+    + Gobblets: List<List<Gobblet>>
+    + whiteColor: bool
+    + Initialize(whiteColor: bool): void
+    + {abstract} GobbletClicked(pos: Position): void
+    + {abstract} StartTurn(otherPlayer: Player): void
+    + setLegalMoves(): void
+}
+
+Node2D <|-- Player
+
+
+class Gobblet {
+    + white: bool
+    + size: int
+    + pos: Position
+    + Gobblet(white: bool, size: int, pos: Position)
+    + move(pos: Position): void
+    + GetLegalPositions(): List<Position>
+    + isExternal(): bool
+    + ToString(): string
+}
+
+Player o--left Gobblet
+
+class Position {
+    - gobbletStack: Stack<Gobblet>
+    + x: int
+    + y: int
+    + Position(x: int, y: int)
+    + getVec2i(): Vector2I
+    + GetGobblet(): Gobblet
+    + PushGobblet(gobblet: Gobblet): void
+    + PopGobblet(): void
+    + Equals(pos: Position): bool
+    + In(positions: List<Position>): bool
+    + ToString(): string
+}
+
+
+Gobblet "1" o--o  "4" Position
+
+
+class GameBoard {
+    - board: Position[][]
+    - evaluation: Evaluation
+    - validPositions: List<Position>
+    - {field} width: (int, int)
+    + height: int
+    + Evaluation: Evaluation
+    - checkHorizontal(pos: Position, color: bool): int
+    - checkVertical(pos: Position, color: bool): int
+    - getAnchorPos(pos: Position, xMod: int, yMod: int): Position
+    - getAnchorPosCount(pos: Position, xMod: int, yMod: int, color: bool): int
+    - checkDiagonal(pos: Position, color: bool): int
+    + Initialize(): void
+    + IsPositionValid(pos: Position): bool
+    + getPos(tilePos: Vector2): Position
+    + getPos(pos: Position): Position
+    + _Process(delta: double): void
+    + checkPosition(x: int, y: int, color: bool): bool
+    + checkRow(pos: Position, color: bool): int
+    + Evaluate(originalPos: Position, newPos: Position, whiteTurn: bool): int
+}
+TileMap <|-- GameBoard
+GameManager *-- GameBoard
+GameManager o- GameManager
+GameBoard *-- Position
+GameBoard o-- Evaluation
+
+class HumanPlayer{
+    + GobbletClicked(pos: Position): void
+    + StartTurn(otherPlayer: Player): void
+}
+
+class AIPlayer{
+    - currBestAction: GameAction
+    + MinMaxScore: AbstractMinMaxScore
+    - BestAction(): Task
+    + GobbletClicked(pos: Position): void
+    + StartTurn(otherPlayer: Player): void
+    + _Process(delta: double): void
+}
+
+Player <|-- HumanPlayer
+Player <|-- AIPlayer
+
+
+AIPlayer o- GameAction
+
+class GameAction {
+    - gobblet: Gobblet
+    - _newPos: Position
+    - _oldPos: Position
+    + OldPos: Position
+    + Gobblet: Gobblet
+    + NewPos: Position
+    + GameAction(gobblet: Gobblet, newPos: Position, oldPos: Position)
+    + GameAction(gobblet: Gobblet, newPos: Position)
+    + ToString(): string
+}
+
+GameAction o- Gobblet
+GameAction o--down- Position
+
+
+abstract class AbstractMinMaxScore {
+    # white: Player
+    # black: Player
+    # maxCurrDepth: int
+    # maxDepth: int
+    # bestEval: int
+    # evaluation: Evaluation
+    + currBestAction: GameAction
+    # AbstractMinMaxScore(white: Player, black: Player, maxDepth: int)
+    # {abstract} MiniMax(currDepth: int, whiteTurn: bool): void
+    # {abstract} MiniMaxCalc(currDepth: int, whiteTurn: bool): int
+    # MinMaxEvalCalc(player: Player, depth: int, whiteTurn: bool, gobblet: Gobblet, pos: Position): int
+    # SimulateRound(simRound: Round, gobblet: Gobblet, pos: Position): void
+    + CalculateBestMove(whiteTurn: bool): void
+    + Reset(): void
+}
+
+AbstractMinMaxScore o- GameAction
+AbstractMinMaxScore o- Player
+
+class Evaluation {
+    - {static}evalRowsCount: static int
+    - {static}repetition: static int
+    - {static}MAX_SCORE: static int
+    - {static}rowIdx: static int
+    - {static}posDiagIdx: static int
+    - {static}negDiagIdx: static int
+    - {field}evalRows: (int s, bool w)[][]
+    - evalRowsValues: int[]
+    - currEval: int
+    - whiteWon: bool
+    - blackWon: bool
+    - moves: List<GameAction>
+    - boardSize: int
+    + WhiteWon: bool
+    + BlackWon: bool
+    + CurrEval: int
+    - CalcEvalSingleRow(idx: int): (eval: int, whiteCount: int, blackCount: int)
+    - CalcEval(whiteTurn: bool): int
+    - UpdateSingleRow(x: int, y: int, size: int, w: bool): void
+    - UpdateRows(x: int, y: int, size: int, w: bool): void
+    - UpdateRows(pos: Position): void
+    - DrawByRepetition(): bool
+    + Evaluation(boardSize: int)
+    + UpdatePos(originalPos: Position, newPos: Position, anteMove: bool): void
+    + UpdateEval(whiteTurn: bool): void
+    + GameFinished(): bool
+}
+
+AbstractMinMaxScore *--- Evaluation
+Evaluation o-left GameAction
+AIPlayer o-- AbstractMinMaxScore
+
+class MinMaxScore {
+    + MinMaxScore(white: Player, black: Player, maxDepth: int)
+    # MiniMax(currDepth: int, whiteTurn: bool): void
+    # MiniMaxCalc(depth: int, whiteTurn: bool): int
+}
+
+
+class MinMaxScorePruning {
+    # MiniMaxPruning(depth: int, alpha: int, beta: int, whiteTurn: bool): int
+    # MinMaxEvalCalc(player: Player, depth: int, whiteTurn: bool, gobblet: Gobblet, pos: Position, alpha: int, beta: int): int
+    # MiniMax(currDepth: int, whiteTurn: bool): void
+    + MinMaxScorePruning(white: Player, black: Player, maxDepth: int)
+}
+
+class MinMaxScoreIterative {
+    - timeLimit: long
+    - initialTime: long
+    - GetElapsedTime(): long
+    # MiniMaxPruning(depth: int, alpha: int, beta: int, whiteTurn: bool): int
+    # MiniMax(currDepth: int, whiteTurn: bool): void
+    + MinMaxScoreIterative(white: Player, black: Player, maxDepth: int, timeLimit: long)
+
+}
+
+AbstractMinMaxScore <|-- MinMaxScore
+MinMaxScore <|-- MinMaxScorePruning
+MinMaxScorePruning <|-- MinMaxScoreIterative
+
+@enduml
