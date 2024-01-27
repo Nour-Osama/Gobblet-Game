@@ -1,0 +1,265 @@
+[gd_scene load_steps=8 format=3 uid="uid://c3cgx60mvpto2"]
+
+[ext_resource type="Script" path="res://Scripts/GameManager.cs" id="1_dhqcj"]
+[ext_resource type="PackedScene" uid="uid://ccb5y62pr54hw" path="res://Scenes/GameScene.tscn" id="2_er1ss"]
+[ext_resource type="Script" path="res://Scripts/PlayerOptions.cs" id="3_rwy0k"]
+
+[sub_resource type="Theme" id="Theme_rn40y"]
+default_font_size = 32
+
+[sub_resource type="Theme" id="Theme_wdl8v"]
+default_font_size = 32
+
+[sub_resource type="Theme" id="Theme_7y14p"]
+default_font_size = 32
+
+[sub_resource type="Theme" id="Theme_v8rqo"]
+default_font_size = 32
+
+[node name="GameManager" type="Node2D" node_paths=PackedStringArray("whiteOptions", "blackOptions", "newGameBut", "exitBut")]
+position = Vector2(72, 48)
+script = ExtResource("1_dhqcj")
+gamePackedScene = ExtResource("2_er1ss")
+whiteOptions = NodePath("CanvasLayer/MarginContainer/WhiteContainer")
+blackOptions = NodePath("CanvasLayer/MarginContainer/BlackContainer")
+newGameBut = NodePath("CanvasLayer/MarginContainer/MarginContainer/Buttons/NewGame")
+exitBut = NodePath("CanvasLayer/MarginContainer/MarginContainer/Buttons/Exit")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_top = 40
+
+[node name="WhiteContainer" type="MarginContainer" parent="CanvasLayer/MarginContainer" node_paths=PackedStringArray("PlayerType", "AiOptions", "miniMaxType", "depth", "timeLimit", "timeLimitHbox")]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/margin_left = 20
+script = ExtResource("3_rwy0k")
+PlayerType = NodePath("VBoxContainer/PlayerOptions")
+AiOptions = NodePath("VBoxContainer/AiOptions")
+miniMaxType = NodePath("VBoxContainer/AiOptions/MiniMaxOptions")
+depth = NodePath("VBoxContainer/AiOptions/DepthHbox/DepthBox")
+timeLimit = NodePath("VBoxContainer/AiOptions/TimeLimitHbox/TimeLimit")
+timeLimitHbox = NodePath("VBoxContainer/AiOptions/TimeLimitHbox")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer/WhiteContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="CanvasLayer/MarginContainer/WhiteContainer/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "White Player Options"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayerOptions" type="OptionButton" parent="CanvasLayer/MarginContainer/WhiteContainer/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 32
+alignment = 1
+icon_alignment = 1
+item_count = 2
+selected = 0
+popup/item_0/text = "Human"
+popup/item_0/id = 1
+popup/item_1/text = "Ai"
+popup/item_1/id = 2
+
+[node name="AiOptions" type="HBoxContainer" parent="CanvasLayer/MarginContainer/WhiteContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="MiniMaxOptions" type="OptionButton" parent="CanvasLayer/MarginContainer/WhiteContainer/VBoxContainer/AiOptions"]
+texture_filter = 1
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
+alignment = 1
+icon_alignment = 1
+item_count = 3
+selected = 1
+popup/item_0/text = "MiniMax"
+popup/item_0/id = 0
+popup/item_1/text = "Mini Max with Pruning"
+popup/item_1/id = 1
+popup/item_2/text = "Mini Max with Iterative Deepining"
+popup/item_2/id = 2
+
+[node name="DepthHbox" type="HBoxContainer" parent="CanvasLayer/MarginContainer/WhiteContainer/VBoxContainer/AiOptions"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Depth" type="Label" parent="CanvasLayer/MarginContainer/WhiteContainer/VBoxContainer/AiOptions/DepthHbox"]
+texture_filter = 1
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Depth"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DepthBox" type="SpinBox" parent="CanvasLayer/MarginContainer/WhiteContainer/VBoxContainer/AiOptions/DepthHbox"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_rn40y")
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+
+[node name="TimeLimitHbox" type="HBoxContainer" parent="CanvasLayer/MarginContainer/WhiteContainer/VBoxContainer/AiOptions"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TimeLimitLabel" type="Label" parent="CanvasLayer/MarginContainer/WhiteContainer/VBoxContainer/AiOptions/TimeLimitHbox"]
+texture_filter = 1
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Time Limit (in ms)
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TimeLimit" type="SpinBox" parent="CanvasLayer/MarginContainer/WhiteContainer/VBoxContainer/AiOptions/TimeLimitHbox"]
+layout_mode = 2
+theme = SubResource("Theme_wdl8v")
+min_value = 1.0
+max_value = 100000.0
+value = 1.0
+
+[node name="BlackContainer" type="MarginContainer" parent="CanvasLayer/MarginContainer" node_paths=PackedStringArray("PlayerType", "AiOptions", "miniMaxType", "depth", "timeLimit", "timeLimitHbox")]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_constants/margin_right = 20
+script = ExtResource("3_rwy0k")
+PlayerType = NodePath("VBoxContainer/PlayerOptions")
+AiOptions = NodePath("VBoxContainer/AiOptions")
+miniMaxType = NodePath("VBoxContainer/AiOptions/MiniMaxOptions")
+depth = NodePath("VBoxContainer/AiOptions/DepthHbox/DepthBox")
+timeLimit = NodePath("VBoxContainer/AiOptions/TimeLimitHbox/TimeLimit")
+timeLimitHbox = NodePath("VBoxContainer/AiOptions/TimeLimitHbox")
+metadata/_edit_use_anchors_ = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer/BlackContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="CanvasLayer/MarginContainer/BlackContainer/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Black Player Options"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayerOptions" type="OptionButton" parent="CanvasLayer/MarginContainer/BlackContainer/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 32
+alignment = 1
+icon_alignment = 1
+item_count = 2
+selected = 0
+popup/item_0/text = "Human"
+popup/item_0/id = 1
+popup/item_1/text = "Ai"
+popup/item_1/id = 2
+
+[node name="AiOptions" type="HBoxContainer" parent="CanvasLayer/MarginContainer/BlackContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="MiniMaxOptions" type="OptionButton" parent="CanvasLayer/MarginContainer/BlackContainer/VBoxContainer/AiOptions"]
+texture_filter = 1
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
+alignment = 1
+icon_alignment = 1
+item_count = 3
+selected = 1
+popup/item_0/text = "MiniMax"
+popup/item_0/id = 0
+popup/item_1/text = "Mini Max with Pruning"
+popup/item_1/id = 1
+popup/item_2/text = "Mini Max with Iterative Deepining"
+popup/item_2/id = 2
+
+[node name="DepthHbox" type="HBoxContainer" parent="CanvasLayer/MarginContainer/BlackContainer/VBoxContainer/AiOptions"]
+layout_mode = 2
+
+[node name="Depth" type="Label" parent="CanvasLayer/MarginContainer/BlackContainer/VBoxContainer/AiOptions/DepthHbox"]
+texture_filter = 1
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Depth"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DepthBox" type="SpinBox" parent="CanvasLayer/MarginContainer/BlackContainer/VBoxContainer/AiOptions/DepthHbox"]
+layout_mode = 2
+theme = SubResource("Theme_7y14p")
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+
+[node name="TimeLimitHbox" type="HBoxContainer" parent="CanvasLayer/MarginContainer/BlackContainer/VBoxContainer/AiOptions"]
+visible = false
+layout_mode = 2
+
+[node name="TimeLimitLabel" type="Label" parent="CanvasLayer/MarginContainer/BlackContainer/VBoxContainer/AiOptions/TimeLimitHbox"]
+texture_filter = 1
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Time Limit (in ms)
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TimeLimit" type="SpinBox" parent="CanvasLayer/MarginContainer/BlackContainer/VBoxContainer/AiOptions/TimeLimitHbox"]
+layout_mode = 2
+theme = SubResource("Theme_v8rqo")
+min_value = 1.0
+max_value = 100000.0
+value = 1.0
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_constants/margin_top = 10
+
+[node name="Buttons" type="HBoxContainer" parent="CanvasLayer/MarginContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="NewGame" type="Button" parent="CanvasLayer/MarginContainer/MarginContainer/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "New Game"
+
+[node name="Exit" type="Button" parent="CanvasLayer/MarginContainer/MarginContainer/Buttons"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "Exit"

@@ -52,20 +52,14 @@ public class Round
         }
     }
 
-    public void AnteMove()
+    public void AnteMove(Evaluation evaluation)
     {
         if (moved)
         {
             moved = false;
             Gobblet.move(originalPos);
-            string originalNotNull = originalPos.GetGobblet() != null ? "true" : "false";
-            string posNotNull = pos.GetGobblet() != null ? "true" : "false";
-          //  GD.Print("Ante Move to original pos " + originalPos + " not null: " + originalNotNull
-         //   + "\tNew pos " + pos + " not null: " + posNotNull);
-        }
-        else
-        {
-           // GD.Print("AntiMove FAILED original pos " + originalPos + "\tNew pos " + pos );
+            // update evaluation rows positions and remove last move
+            evaluation.UpdatePos(OriginalPos, Pos,true);
         }
     }
     public void SetGobblet(Position pos)

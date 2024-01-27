@@ -1,130 +1,87 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 
 public partial class GameManager : Node2D
 {
-	private Player whitePlayer;
-	private Player blackPlayer;
 	public static GameManager Instance;
-	[Export] public GameBoard GameBoard;
-
+	public GameBoard GameBoard;
+	[Export] private PackedScene gamePackedScene;
+	private GameScene gameInstance;
 	public Round Round => round;
-
-	[Export] public Sprite2D SelectedHalo;
-	[Export] public Sprite2D InvalidHalo;
-	[Export] public RichTextLabel TurnText;
+	[Export] public PlayerOptions whiteOptions;
+	[Export] public PlayerOptions blackOptions;
+	[Export] private Button newGameBut;
+	[Export] private Button exitBut;
+	private Sprite2D SelectedHalo;
+	private RichTextLabel TurnText;
 	private Round round;
 	private bool finished;
-	private void instantiateGobblet(Gobblet gobblet)
-	{
-		var instance = gobblet.GobbletScene.Instantiate() as GobletScene;
-		string color = (gobblet.white) ? "White": "Black" ;
-		string size = (gobblet.size > 2) ? "big": "small" ;
-		string path = $"res://Assets/Gobblets/{color}/{size}.tres";
-		instance.Sprite2D.Texture = GD.Load<AtlasTexture>(path);
-		instance.Name = "gobblet " + gobblet.size;
-		gobblet.GobletScene = instance;
-		AddChild(instance);
-		Vector2 pos = GameBoard.MapToLocal(gobblet.pos.getVec2i());
-		//GD.Print(pos);
-		instance.Set("position", pos);
-	}
+
 	// Called when the node enters the scene tree for the first time.
+
+	private void StartNewGame()
+	{
+		// delete Past Game
+		if(gameInstance != null) gameInstance.QueueFree();
+		// reset round counter
+		Round.number = 1;
+		// start new game
+		gameInstance = gamePackedScene.Instantiate<GameScene>();
+		AddChild(gameInstance);
+		SelectedHalo = gameInstance.SelectedHalo;
+		TurnText = gameInstance.TurnText;
+		// initialize round params
+		round = new Round(gameInstance.whitePlayer);
+		finished = false;
+		round.Player.StartTurn(gameInstance.blackPlayer);
+		GD.Print("Round " + round + " \tWhite Player turn\n");
+	} 
 	
 	public override void _Ready()
 	{
-		// initialize gameboard
-		GameBoard.Initialize();
 		// intiaize gamemanager instance
 		Instance = this;
-		// initilaize players 
-		
-		whitePlayer = new AIPlayer();
-		whitePlayer.Initialize(true,4);
-		blackPlayer = new AIPlayer();
-		blackPlayer.Initialize(false,4);
-		AddChild(whitePlayer);
-		AddChild(blackPlayer);
-		foreach (var gobbletType in whitePlayer.Gobblets)
-		{
-			foreach (var gobblet in gobbletType)
-			{
-				instantiateGobblet(gobblet);
-			}
-		}
-		
-		foreach (var gobbletSize in blackPlayer.Gobblets)
-		{
-			foreach (var gobblet in gobbletSize)
-			{
-				instantiateGobblet(gobblet);
-			}
-		}
-		// initialize round params
-		round = new Round(whitePlayer);
-		finished = false;
-		round.Player.StartTurn(blackPlayer);
-		GD.Print("Round " + round + " \tWhite Player turn\n");
+		newGameBut.Pressed += StartNewGame;
+		exitBut.Pressed += ExitGame;
 	}
-	
 
+	private void ExitGame()
+	{
+		GetTree().Quit();
+	}
 	private void checkGameEnded()
 	{
-		bool whiteWon = false;
-		bool blackWon = false;
-		for (int i = 0; i < 4; i++)
+		if (GameBoard.Evaluation.GameFinished())
 		{
-			for (int j = 0; j < 4; j++)
+			finished = true;
+			if (GameBoard.Evaluation.BlackWon)
 			{
-				// for each valid positions
-				Position pos = GameBoard.getPos(new Position(i, j));
-				// if not empty
-				if (pos.GetGobblet() != null)
-				{
-					bool color = pos.GetGobblet().white;
-					if (GameBoard.checkWinning(pos, color))
-					{
-						finished = true;
-						if (pos.GetGobblet().white)
-						{
-							whiteWon = true;
-						}
-						else blackWon = true;
-					}
-				}
-			}	
-		}
-		// if after movement both players won then the current player that moved piece loses
-		if (blackWon && whiteWon)
-		{
-			if (round.Player.whiteColor)
-			{
-				whiteWon = false;
 				GD.Print("Black Player Won the game");
 				TurnText.Text = "Black Player Won the game";
 			}
+			else if (GameBoard.Evaluation.WhiteWon)
+			{
+				GD.Print("White Player Won the game");
+				TurnText.Text = "White Player Won the game";
+			}
 			else
 			{
-				blackWon = false;
-			    GD.Print("White Player Won the game");
-			    TurnText.Text = "White Player Won the game";
+				GD.Print("Draw By Repetition");
+				TurnText.Text = "Draw By Repetition";
 			}
 		}
-		else if (blackWon)
-		{
-			GD.Print("Black Player Won the game");
-			TurnText.Text = "Black Player Won the game";
-		}
-		else if (whiteWon)
-		{
-			GD.Print("White Player Won the game");
-			TurnText.Text = "White Player Won the game";
-		}
 	}
+
 	private void endTurn()
 	{
+		Player whitePlayer = gameInstance.whitePlayer;
+		Player blackPlayer = gameInstance.blackPlayer;
+		// evaluate board to determine evaluation score and finishing conditions
+		int eval = GameBoard.Evaluate(round.OriginalPos, round.Pos, round.Player.whiteColor);
 		// evaluate winning conditions
-		GD.Print("Current Board Evaluation " + GameBoard.Evaluate(round.OriginalPos,round.Pos));
+		GD.Print("Current Board Evaluation " + eval);
 		checkGameEnded();
 		// reset current gobblet
 		ResetCurrGobblet();
@@ -137,7 +94,7 @@ public partial class GameManager : Node2D
 		else TurnText.Text += " after " + (int)Round.number + " Rounds";
 		round.Player.StartTurn(otherPlayer);
 	}
-	
+
 	private void setCurrentGobblet()
 	{
 		Position pos = round.Gobblet.pos;

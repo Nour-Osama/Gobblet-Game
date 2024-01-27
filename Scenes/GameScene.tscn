@@ -1,11 +1,11 @@
 [gd_scene load_steps=4 format=3 uid="uid://ccb5y62pr54hw"]
 
-[ext_resource type="Script" path="res://Scripts/GameManager.cs" id="1_d4ci6"]
+[ext_resource type="Script" path="res://Scripts/GameScene.cs" id="1_a2c7b"]
 [ext_resource type="PackedScene" uid="uid://b0u24bp2rc32v" path="res://Scenes/BoardScene.tscn" id="1_halis"]
 [ext_resource type="PackedScene" uid="uid://dw2x88jiop4uh" path="res://Scenes/halo.tscn" id="3_4avmt"]
 
 [node name="GameScene" type="Node2D" node_paths=PackedStringArray("GameBoard", "SelectedHalo", "TurnText")]
-script = ExtResource("1_d4ci6")
+script = ExtResource("1_a2c7b")
 GameBoard = NodePath("gameboard")
 SelectedHalo = NodePath("Halo")
 TurnText = NodePath("TurnText")
